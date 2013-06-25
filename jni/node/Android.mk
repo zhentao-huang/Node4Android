@@ -59,7 +59,6 @@ LOCAL_SRC_FILES := \
 
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/src/. \
-	$(LOCAL_PAHT)/.. \
 	$(LOCAL_PATH)/../v8/include/. \
 	$(LOCAL_PATH)/../http_parser/. \
 	$(LOCAL_PATH)/../uv/src/. \

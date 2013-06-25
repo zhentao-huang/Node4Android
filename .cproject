@@ -34,9 +34,12 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="nodeand.null.2095100548" name="nodeand"/>
 	</storageModule>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="com.android.toolchain.gcc.1742118098;com.android.toolchain.gcc.1742118098.1491185401;com.android.gcc.compiler.720179993;com.android.gcc.inputType.1229833014">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.android.AndroidPerProjectProfile"/>
+		</scannerConfigBuildInfo>
+	</storageModule>
 </cproject>

@@ -2222,6 +2222,7 @@ static long genPng(QRcode *qrcode, char** png)
 
 	}
 
+	LOGI("Before get externFodler");
 	char* tempdir = getExternFolder();
 
 	const char* tempfile = "/tmp.png";
@@ -2233,9 +2234,12 @@ static long genPng(QRcode *qrcode, char** png)
 	delete [] tempdir;
 
 	FILE* raw = fopen(fdir, "w+b");
-	fwrite(qrcode->data, 1, qrcode->width * qrcode->width * 3, raw);
+	fwrite(qrcode->data, 1, qrcode->width * qrcode->width, raw);
+	fwrite(qrcode->data, 1, qrcode->width * qrcode->width, raw);
+	fwrite(qrcode->data, 1, qrcode->width * qrcode->width, raw);
 	fclose(raw);
 
+	LOGI("Before oepn for read");
 	int ret = 0;
 	fp = fopen(fdir, "w+b");
 	delete [] fdir;
@@ -2247,6 +2251,7 @@ static long genPng(QRcode *qrcode, char** png)
 		return 0;
 	}
 
+	LOGI("Before png_create_write_struct");
 	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if(png_ptr == NULL) {
 		//LOGW("Failed to initialize PNG writer.\n");
@@ -2259,6 +2264,7 @@ static long genPng(QRcode *qrcode, char** png)
 		return 0;
 	}
 
+	LOGI("Before setjmp");
 	if(setjmp(png_jmpbuf(png_ptr))) {
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		LOGW("Failed to write PNG image.\n");
@@ -2271,6 +2277,7 @@ static long genPng(QRcode *qrcode, char** png)
 		return x;
 	}
 
+	LOGI("Before init io");
 	png_init_io(png_ptr, fp);
 	png_set_IHDR(png_ptr, info_ptr,
 			realwidth, realwidth,
@@ -2283,6 +2290,7 @@ static long genPng(QRcode *qrcode, char** png)
 			dpi * INCHES_PER_METER,
 			dpi * INCHES_PER_METER,
 			PNG_RESOLUTION_METER);
+	LOGI("Before write info");
 	png_write_info(png_ptr, info_ptr);
 
 	/* top margin */
@@ -2291,6 +2299,7 @@ static long genPng(QRcode *qrcode, char** png)
 		png_write_row(png_ptr, row);
 	}
 
+	LOGI("Before data");
 	/* data */
 	p = qrcode->data;
 	for(y=0; y<qrcode->width; y++) {
@@ -2314,15 +2323,18 @@ static long genPng(QRcode *qrcode, char** png)
 			png_write_row(png_ptr, row);
 		}
 	}
+	LOGI("Before bottom margin");
 	/* bottom margin */
 	memset(row, 0xff, (realwidth + 7) / 8);
 	for(y=0; y<margin * size; y++) {
 		png_write_row(png_ptr, row);
 	}
 
+	LOGI("Before write png");
 	png_write_end(png_ptr, info_ptr);
 	png_destroy_write_struct(&png_ptr, &info_ptr);
 
+	LOGI("Before free");
 	len = ftell(fp);
 	rewind(fp);
 	*png = (char*)malloc(len);
@@ -2353,18 +2365,23 @@ Handle<Value> Str2Qr(const Arguments& args)
 	if (wr == len)
 	{
 		QRcode* code = NULL;
+		LOGI("Before encodeingString");
 		code = QRcode_encodeString((char *)str, version, level, hint, casesensitive);
+		LOGI("After encodingString");
 		if (code != NULL)
 		{
 			char* qrpng = NULL;
+			LOGI("Before genPng");
 			len = (int) genPng(code, &qrpng);
+			LOGI("After genPng");
 			if (len != 0)
 			{
 				qrbuf = Buffer::New(qrpng, len);
 			}
-
+			LOGI("Before free");
 			free(qrpng);
 			QRcode_free(code);
+			LOGI("After free");
 		}
 	}
 

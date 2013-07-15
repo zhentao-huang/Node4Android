@@ -11,6 +11,9 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
+import android.content.Context;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.util.Log;
 
 public class NetUtil
@@ -18,7 +21,7 @@ public class NetUtil
     private static final int bufferSize = 64 * 1024;
     private static final String tag = "NetUtil";
 
-    public static String getLocalIpAddress()
+    public static String getLocalIpAddress(Context context)
     {
         String localip = null;
         try
@@ -46,6 +49,16 @@ public class NetUtil
         catch(SocketException ex)
         {
             Log.e("WifiPreference IpAddress", ex.toString());
+        }
+        if (localip == null)
+        {
+            WifiManager manager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            WifiInfo info = manager.getConnectionInfo();
+            if (info != null)
+            {
+                int address = info.getIpAddress();
+                localip = String.format("%d.%d.%d.%d", (address & 0xff), (address & 0xff00) >>>8, (address & 0xff0000) >>>16, address >>> 24);  
+            }
         }
         return localip;
     }

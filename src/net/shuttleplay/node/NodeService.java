@@ -57,8 +57,8 @@ public class NodeService extends Service implements NodeContext
             Notification notification = new Notification(resId, runlabel,
                     System.currentTimeMillis());
             Intent notiIntent = new Intent(Intent.ACTION_VIEW);
-            String ipAddress = NetUtil.getLocalIpAddress();
-            notiIntent.setData(Uri.parse("http://" + ipAddress + ":8000" + index));
+            String ipAddress = NetUtil.getLocalIpAddress(this);
+            notiIntent.setData(Uri.parse("http://" + ipAddress + ":8001" + index));
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notiIntent, 0);
             notification.setLatestEventInfo(this, runlabel, littleLable, pendingIntent);
             startForeground(1, notification);

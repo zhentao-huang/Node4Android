@@ -125,8 +125,9 @@ public/* abstract */class LaunchActivity extends Activity implements ServiceConn
             props.load(new FileInputStream(getFilesDir() + "/config.props"));
 
             String index = props.getProperty("index");
+            String mainfile = props.getProperty("main");
             boolean debugable = Boolean.parseBoolean(props.getProperty("debug", "false"));
-            runNodeJs(debugable);
+            runNodeJs(mainfile, debugable);
 
             Intent notiIntent = new Intent(Intent.ACTION_VIEW);
             String ipAddress = NetUtil.getLocalIpAddress(this);
@@ -156,9 +157,9 @@ public/* abstract */class LaunchActivity extends Activity implements ServiceConn
 
     }
 
-    protected void runNodeJs(boolean debug)
+    protected void runNodeJs(String mainfile, boolean debug)
     {
-        File js = new File(getFilesDir(), "nodeweb/nodeweb.js");
+        File js = new File(getFilesDir(), mainfile);
         if (js.exists() && mNodejs != null)
         {
             try

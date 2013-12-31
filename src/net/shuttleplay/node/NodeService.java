@@ -98,7 +98,6 @@ public class NodeService extends Service implements NodeContext
                 @Override
                 public void run()
                 {
-                    // TODO Auto-generated method stub
                     NodeBroker.runNodeJs(NodeService.this, jsfile);
                 }
 

@@ -126,12 +126,13 @@ public/* abstract */class LaunchActivity extends Activity implements ServiceConn
 
             String index = props.getProperty("index");
             String mainfile = props.getProperty("main");
+            String port = props.getProperty("port");
             boolean debugable = Boolean.parseBoolean(props.getProperty("debug", "false"));
             runNodeJs(mainfile, debugable);
 
             Intent notiIntent = new Intent(Intent.ACTION_VIEW);
             String ipAddress = NetUtil.getLocalIpAddress(this);
-            notiIntent.setData(Uri.parse("http://" + ipAddress + ":8001" + index));
+            notiIntent.setData(Uri.parse("http://" + ipAddress + ":" + port + index));
             startActivity(notiIntent);
         }
         catch(FileNotFoundException e)

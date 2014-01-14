@@ -51,6 +51,7 @@ public class NodeService extends Service implements NodeContext
 
             String index = props.getProperty("index");
             String runlabel = props.getProperty("runlabel");
+            String port = props.getProperty("port");
             String littleLable = props.getProperty("littlelabel");
 
             int resId = getResources().getIdentifier("icon", "drawable", getPackageName());
@@ -58,7 +59,7 @@ public class NodeService extends Service implements NodeContext
                     System.currentTimeMillis());
             Intent notiIntent = new Intent(Intent.ACTION_VIEW);
             String ipAddress = NetUtil.getLocalIpAddress(this);
-            notiIntent.setData(Uri.parse("http://" + ipAddress + ":8001" + index));
+            notiIntent.setData(Uri.parse("http://" + ipAddress + ":" + port + index));
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notiIntent, 0);
             notification.setLatestEventInfo(this, runlabel, littleLable, pendingIntent);
             startForeground(1, notification);

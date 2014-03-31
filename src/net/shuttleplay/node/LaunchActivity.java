@@ -81,7 +81,7 @@ public/* abstract */class LaunchActivity extends Activity implements ServiceConn
             
                 String ipAddress = NetUtil.getLocalIpAddress(this);
                 intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("http://" + ipAddress + ":" + port + "/exit"));
+                intent.setData(Uri.parse("http://" + ipAddress + ":" + port + "/exit.html?exit=true"));
                 startActivity(intent);
                 stopService(new Intent(NodeService.LAUNCH_NODE));
 //                unbindService(mConnection);

@@ -88,12 +88,14 @@ public class NodeService extends Service implements NodeContext
             int exitId = getResources().getIdentifier("exit", "id", getPackageName());
             notiIntent = new Intent("net.shuttleplay.node.ShutDown");
             notiIntent.addCategory(Intent.CATEGORY_DEFAULT);
+//            notiIntent = new Intent(Intent.ACTION_VIEW);
+//            notiIntent.setData(Uri.parse("http://" + ipAddress + ":" + port + "/exit.html?exit=true"));
             pendingIntent = PendingIntent.getActivity(this, 0, notiIntent, 0);
             rv.setOnClickPendingIntent(exitId, pendingIntent);
             
             int aboutId = getResources().getIdentifier("about", "id", getPackageName());
             notiIntent = new Intent(Intent.ACTION_VIEW);
-            notiIntent.setData(Uri.parse("http://" + ipAddress + ":" + port + "/about"));
+            notiIntent.setData(Uri.parse("http://" + ipAddress + ":" + port + "/about.html"));
             pendingIntent = PendingIntent.getActivity(this, 0, notiIntent, 0);
             rv.setOnClickPendingIntent(aboutId, pendingIntent);
             

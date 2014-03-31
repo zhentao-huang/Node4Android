@@ -2,6 +2,7 @@ package net.shuttleplay.node;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
@@ -12,6 +13,9 @@ import android.app.Service;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.IBinder;
+import android.widget.RemoteViews;
+
+import com.google.analytics.tracking.android.*;
 
 public class NodeService extends Service implements NodeContext
 {
@@ -21,18 +25,23 @@ public class NodeService extends Service implements NodeContext
     @Override
     public void onStart(Intent intent, int startId)
     {
-        // TODO Auto-generated method stub
         super.onStart(intent, startId);
     }
 
     @Override
     public void onDestroy()
     {
-        // TODO Auto-generated method stub
         super.onDestroy();
+        android.util.Log.i("NodeService", "onDestroy");
+        GoogleAnalytics ga = GoogleAnalytics.getInstance(this);
+        Tracker t = ga.getTracker("UA-44940845-2");
+        t.send(MapBuilder
+                .createEvent(LAUNCH_NODE, "stop", "NodeService", null)
+                .build());
+        
         stopForeground(true);
     }
-
+    
     @Override
     public void onCreate()
     {
@@ -42,18 +51,28 @@ public class NodeService extends Service implements NodeContext
         setData(Android_Context, this);
         setData(Files_Dir, this.getFilesDir().getAbsolutePath());
 
+        GoogleAnalytics ga = GoogleAnalytics.getInstance(this);
+        Tracker t = ga.getTracker("UA-44940845-2");
+        t.send(MapBuilder
+                .createEvent(LAUNCH_NODE, "start", "NodeService", null)
+                .build());
+        
         try
         {
             Class.forName("net.shuttleplay.node.NodeBroker");
 
             Properties props = new Properties();
-            props.load(new FileInputStream(getFilesDir() + "/config.props"));
+            String configName = getFilesDir() + "/config.props";
+            props.load(new FileInputStream(configName));
 
             String index = props.getProperty("index");
-            String runlabel = props.getProperty("runlabel");
+            int runId = getResources().getIdentifier("app_name", "string", getPackageName());
+            String runlabel = getResources().getString(runId);
             String port = props.getProperty("port");
-            String littleLable = props.getProperty("littlelabel");
-
+//            int labelId = getResources().getIdentifier("view", "string", getPackageName());
+//            String littleLable = getResources().getString(labelId);
+            props.setProperty("apk", SdUtil.getPackageFile(this));
+            
             int resId = getResources().getIdentifier("icon", "drawable", getPackageName());
             Notification notification = new Notification(resId, runlabel,
                     System.currentTimeMillis());
@@ -61,7 +80,28 @@ public class NodeService extends Service implements NodeContext
             String ipAddress = NetUtil.getLocalIpAddress(this);
             notiIntent.setData(Uri.parse("http://" + ipAddress + ":" + port + index));
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notiIntent, 0);
-            notification.setLatestEventInfo(this, runlabel, littleLable, pendingIntent);
+//            notification.setLatestEventInfo(this, runlabel, littleLable, pendingIntent);
+            notification.contentIntent = pendingIntent;
+            
+            RemoteViews rv = new RemoteViews(getPackageName(), getResources().getIdentifier("notify", "layout", getPackageName()));
+            
+            int exitId = getResources().getIdentifier("exit", "id", getPackageName());
+            notiIntent = new Intent("net.shuttleplay.node.ShutDown");
+            notiIntent.addCategory(Intent.CATEGORY_DEFAULT);
+            pendingIntent = PendingIntent.getActivity(this, 0, notiIntent, 0);
+            rv.setOnClickPendingIntent(exitId, pendingIntent);
+            
+            int aboutId = getResources().getIdentifier("about", "id", getPackageName());
+            notiIntent = new Intent(Intent.ACTION_VIEW);
+            notiIntent.setData(Uri.parse("http://" + ipAddress + ":" + port + "/about"));
+            pendingIntent = PendingIntent.getActivity(this, 0, notiIntent, 0);
+            rv.setOnClickPendingIntent(aboutId, pendingIntent);
+            
+            notification.contentView = rv;
+            
+            FileOutputStream fout = new FileOutputStream(configName);
+            props.store(fout, null);
+            fout.close();
             startForeground(1, notification);
         }
         catch(FileNotFoundException e)
@@ -100,6 +140,9 @@ public class NodeService extends Service implements NodeContext
                 public void run()
                 {
                     NodeBroker.runNodeJs(NodeService.this, jsfile);
+                    NodeService.this.stopForeground(true);
+                    NodeService.this.stopSelf();
+                    android.util.Log.i("NodeService", "node.js stopped");
                 }
 
             }).start();
@@ -115,6 +158,9 @@ public class NodeService extends Service implements NodeContext
                 {
                     // TODO Auto-generated method stub
                     NodeBroker.debugNodeJs(NodeService.this, jsfile);
+                    NodeService.this.stopForeground(true);
+                    NodeService.this.stopSelf();
+                    android.util.Log.i("NodeService", "node.js debug stopped");
                 }
 
             }).start();
@@ -134,4 +180,5 @@ public class NodeService extends Service implements NodeContext
     }
 
     private HashMap<String, Object> mData;
+    
 }

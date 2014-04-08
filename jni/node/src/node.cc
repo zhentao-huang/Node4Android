@@ -21,8 +21,13 @@
 
 #include <android/log.h>
 
+#if 0
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "node.js", __VA_ARGS__))
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "node.js", __VA_ARGS__))
+#else
+#define LOGI(...)
+#define LOGW(...)
+#endif
 
 #include "qrencode.h"
 #include <setjmp.h>

@@ -160,7 +160,7 @@ public/* abstract */class LaunchActivity extends Activity implements ServiceConn
     @Override
     public void onServiceConnected(ComponentName name, IBinder service)
     {
-        mConnection = this;
+//        mConnection = this;
         mNodejs = NodeJsService.Stub.asInterface(service);
         // mProgress.dismiss();
         // mProgress = null;
@@ -232,6 +232,7 @@ public/* abstract */class LaunchActivity extends Activity implements ServiceConn
         {
             props = null;
         }
+        unbindService(this);
         finish();
     }
 
@@ -273,7 +274,7 @@ public/* abstract */class LaunchActivity extends Activity implements ServiceConn
     // protected abstract int getResourceId(String resourceName);
 
     private static NodeJsService mNodejs = null;
-    private static ServiceConnection mConnection = null;
+//    private static ServiceConnection mConnection = null;
     private final Timer mTimer = new Timer();
     private TimerTask mTask;
     private Handler mHandler;

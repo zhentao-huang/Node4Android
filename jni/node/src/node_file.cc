@@ -37,11 +37,14 @@
 # include <io.h>
 #endif
 
+#if defined(DEBUG)
 #include <android/log.h>
-
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "node.console", __VA_ARGS__))
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "node.console", __VA_ARGS__))
-
+#else
+#define LOGI(...)
+#define LOGW(...)
+#endif
 
 
 namespace node {
@@ -724,7 +727,7 @@ static Handle<Value> Write(const Arguments& args) {
   Local<Value> cb = args[5];
 
   // Added : To show console.log
-  if (fd == 1 || fd == 2)
+  if ((fd == 1 || fd == 2) && len < 128)
   {
 	  char* cb = new char[len + 1];
 	  memset(cb, 0, len+1);
@@ -735,7 +738,7 @@ static Handle<Value> Write(const Arguments& args) {
 	  }
 	  else
 	  {
-		  LOGW(cb);
+		 LOGI(cb);
 	  }
 	  delete [] cb;
   }

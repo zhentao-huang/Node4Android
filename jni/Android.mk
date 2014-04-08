@@ -33,6 +33,10 @@ LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/openssl/include/. \
     $(LOCAL_PATH)/lib
 
+ifeq ($(APP_OPTIM), debug)
+	LOCAL_CFLAGS := -g -DDEBUG
+endif
+
 LOCAL_LDLIBS    := -lz -lm -llog #-landroid # -lEGL  # -lGLESv1_CM
 #LOCAL_LDLIBS    := -lz -llog -landroid -lEGL  -lGLESv1_CM
 #LOCAL_LDLIBS    := -lz -llog -landroid  

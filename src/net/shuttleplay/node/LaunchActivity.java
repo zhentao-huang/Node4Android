@@ -180,14 +180,6 @@ public/* abstract */class LaunchActivity extends Activity implements ServiceConn
             boolean debugable = Boolean.parseBoolean(props.getProperty("debug", "false"));
             File externalSD = SdUtil.getSdCard();
             Log.i("node", "externalSd = " + externalSD.getAbsolutePath());
-//            Log.i("node", "externalCache = " + this.getExternalCacheDir().getAbsolutePath());
-//            Log.i("node", "externalFileDir = " + this.getExternalFilesDir("cchess").getAbsolutePath());
-//            if (externalSD == null)
-//            {
-//                Toast.makeText(this, "No external SD card found", Toast.LENGTH_LONG).show();
-//                finish();
-//                return;
-//            }
             File folder = new File(externalSD, folderName);
             if (!folder.exists() && !folder.mkdirs() && !folder.isDirectory())
             {

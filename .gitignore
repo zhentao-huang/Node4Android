@@ -1,6 +1,5 @@
 assets/*
 bin/*
-libs/*
 .DS_Store
 obj/
 gen/*

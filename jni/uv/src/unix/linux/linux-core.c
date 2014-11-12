@@ -35,6 +35,12 @@
 #include <fcntl.h>
 #include <time.h>
 
+
+//#include <android/log.h>
+//
+//#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "node", __VA_ARGS__))
+//#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "node", __VA_ARGS__))
+
 #if !defined(ANDROID)
 #define HAVE_IFADDRS_H 1
 #ifdef __UCLIBC__
@@ -121,17 +127,35 @@ char** uv_setup_args(int argc, char** argv) {
   int envc;
   char *s;
   int i;
+  int envlen, arglen;
 
   for (envc = 0; environ[envc]; envc++);
 
   s = envc ? environ[envc - 1] : argv[argc - 1];
 
-  process_title.str = argv[0];
-  process_title.len = s + strlen(s) + 1 - argv[0];
+//  for (i=0; i<envc; ++i)
+//  {
+//	  LOGI("environ[%d] = %s", i, environ[i]);
+//  }
+//
+//  for (i=0; i<argc; ++i)
+//  {
+//	  LOGI("argv[%d] pointer is 0x%x, value is %s", i, argv[i], argv[i]);
+//  }
 
-  size = process_title.len;
+  process_title.str = argv[argc - 1];
+//  process_title.len = s + strlen(s) + 1 - argv[0];
+  process_title.len = strlen(argv[argc - 1]) + 1;
+
+  size = 0;
+  for (i = 0; i<argc; ++i)
+  {
+	  size += strlen(argv[i]) + 1;
+  }
   size += (argc + 1) * sizeof(char **);
   size += (envc + 1) * sizeof(char **);
+  envlen = s + strlen(s) + 1 - environ[0];
+  size += envlen;
 
   if ((s = (char *) malloc(size)) == NULL) {
     process_title.str = NULL;
@@ -139,23 +163,43 @@ char** uv_setup_args(int argc, char** argv) {
     return argv;
   }
 
+
+//  LOGI("environ = 0x%x, argv = 0x%x", environ, argv);
+//  LOGI("envc = %d, argc = %d, sizeof(char**) = %d, process_title = %s, len = %d", envc, argc, sizeof(char**), process_title.str, process_title.len);
+//  return argv;
+
+
   new_argv = (char **) s;
   new_env = new_argv + argc + 1;
   s = (char *) (new_env + envc + 1);
-  memcpy(s, process_title.str, process_title.len);
-
-  for (i = 0; i < argc; i++)
-    new_argv[i] = s + (argv[i] - argv[0]);
+  for (i = 0; i < argc; ++i)
+  {
+	  arglen = strlen(argv[i]) + 1;
+	  memcpy(s, argv[i], arglen);
+	  new_argv[i] = s;
+	  s += arglen;
+  }
   new_argv[argc] = NULL;
-
-  s += environ[0] - argv[0];
+  memcpy(s, environ[0], envlen);
 
   for (i = 0; i < envc; i++)
     new_env[i] = s + (environ[i] - environ[0]);
   new_env[envc] = NULL;
 
   environ = new_env;
+
+//  for (i=0; i<envc; ++i)
+//  {
+//	  LOGI("new environ[%d] = %s", i, environ[i]);
+//  }
+//
+//  for (i=0; i<argc; ++i)
+//  {
+//	  LOGI("new argv[%d] pointer is 0x%x, value is %s", i, new_argv[i], new_argv[i]);
+//  }
+
   return new_argv;
+
 }
 
 

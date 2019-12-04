@@ -71,3 +71,7 @@ The project is conform MIT License
 ## Contact me
 Any comments please send me a mail to zhentao_huang#hotmail.com, 
 Please replace # with @
+
+## Test for images
+![Use cases][imgs/scanengine_usecase.png]
+[Use cases](imgs/scanengine_usecase.svg)
